@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #020617;
+  color: #f8fafc;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.25), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(245, 158, 11, 0.2), transparent 45%),
+    #020617;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+.btn-primary {
+  @apply rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:shadow-blue-500/60;
+}
+
+.btn-secondary {
+  @apply rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10;
+}
+
+.badge-chip {
+  @apply inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[11px];
+}
+
+.resource-chip {
+  @apply rounded-full bg-white/10 px-2 py-0.5 capitalize;
+}
+
+.reward-chip {
+  @apply rounded-full bg-emerald-500/20 px-2 py-0.5 capitalize text-emerald-200;
+}
+
+

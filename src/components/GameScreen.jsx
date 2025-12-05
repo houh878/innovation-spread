@@ -15,6 +15,8 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import RewardedAds from './RewardedAds';
 import Store from './Store';
+import MissionsTriggerTab from './MissionsTriggerTab';
+import MissionsPanel from './MissionsPanel';
 
 function GameScreen() {
   const navigate = useNavigate();
@@ -38,7 +40,50 @@ function GameScreen() {
   const [isMobile, setIsMobile] = useState(false);
   const [mapScale, setMapScale] = useState(1);
   const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
+  const [isMissionsPanelOpen, setIsMissionsPanelOpen] = useState(false);
   const touchRef = useRef({ startDistance: 0, startScale: 1, startX: 0, startY: 0, isPanning: false });
+
+  // Missions Data
+  const missions = [
+    {
+      id: 1,
+      title: 'Besuche das Startup District',
+      description: 'Knüpfe 3 neue Kontakte',
+      progress: { current: 1, max: 3 },
+      rewards: [
+        { type: 'xp', label: '+200 XP', icon: 'Zap', color: '#10B981' },
+        { type: 'reach', label: '+3 Reach', icon: 'Users', color: '#10B981' }
+      ]
+    },
+    {
+      id: 2,
+      title: 'Teile deine Idee',
+      description: 'In einem Forschungslabor',
+      progress: { current: 0, max: 1 },
+      rewards: [
+        { type: 'xp', label: '+150 XP', icon: 'Zap', color: '#10B981' },
+        { type: 'depth', label: '+5 Depth', icon: 'TrendingDown', color: '#10B981' }
+      ]
+    },
+    {
+      id: 3,
+      title: 'Organisiere ein Event',
+      description: 'Community-Event veranstalten',
+      progress: { current: 0, max: 1 },
+      rewards: [
+        { type: 'xp', label: '+300 XP', icon: 'Zap', color: '#10B981' },
+        { type: 'synergy', label: '+10 Synergy', icon: 'Sparkles', color: '#10B981' }
+      ]
+    }
+  ];
+
+  const toggleMissionsPanel = () => {
+    setIsMissionsPanelOpen(!isMissionsPanelOpen);
+  };
+
+  const closeMissionsPanel = () => {
+    setIsMissionsPanelOpen(false);
+  };
 
   useEffect(() => {
     setMapLoaded(true);
@@ -419,6 +464,19 @@ function GameScreen() {
       <div className="rewarded-ads-container">
         <RewardedAds />
       </div>
+
+      {/* Missions Trigger Tab */}
+      <MissionsTriggerTab 
+        onClick={toggleMissionsPanel}
+        missionsCount={missions.length}
+      />
+
+      {/* Missions Panel */}
+      <MissionsPanel
+        isOpen={isMissionsPanelOpen}
+        onClose={closeMissionsPanel}
+        missions={missions}
+      />
 
       {/* Store Modal */}
       <Store />

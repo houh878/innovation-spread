@@ -39,11 +39,66 @@ function GameScreen() {
     setMapLoaded(true);
   }, []);
 
-  const cities = [
-    { name: 'Herzogenaurach', x: 15, y: 20, buildings: 2 },
-    { name: 'Erlangen', x: 75, y: 25, buildings: 2 },
-    { name: 'Fürth', x: 25, y: 55, buildings: 1 },
-    { name: 'Nuremberg', x: 60, y: 70, buildings: 3 }
+  const cityRegions = [
+    {
+      id: 'nuremberg',
+      name: 'Nürnberg',
+      polygon: '60,10 75,12 80,25 78,40 70,50 60,55 50,50 45,40 48,25 55,15',
+      color: '#3B82F6',
+      hotspots: [
+        { id: 'nue_airport', name: 'Nuremberg Airport (NUE)', x: 58, y: 68, type: 'airport', active: false }
+      ]
+    },
+    {
+      id: 'erlangen',
+      name: 'Erlangen',
+      polygon: '70,20 85,22 88,35 85,45 75,48 68,42 65,30 68,22',
+      color: '#8B5CF6',
+      hotspots: [
+        { id: 'erlangen_uni', name: 'FAU Erlangen', x: 75, y: 25, type: 'university', active: false }
+      ]
+    },
+    {
+      id: 'herzogenaurach',
+      name: 'Herzogenaurach',
+      polygon: '10,15 25,18 28,30 25,40 18,42 12,35 10,25 12,18',
+      color: '#10B981',
+      hotspots: [
+        { id: 'adidas_hq', name: 'Adidas HQ', x: 15, y: 20, type: 'corporate', active: false }
+      ]
+    },
+    {
+      id: 'fuerth',
+      name: 'Fürth',
+      polygon: '20,50 35,52 40,65 35,75 25,78 18,70 15,60 18,52',
+      color: '#F59E0B',
+      hotspots: [
+        { id: 'fuerth_center', name: 'Fürth Center', x: 25, y: 55, type: 'startup', active: false }
+      ]
+    }
+  ];
+
+  const roads = [
+    {
+      name: 'A73',
+      path: 'M 15,30 L 25,35 L 35,40 L 50,45 L 65,50 L 75,52',
+      type: 'highway'
+    },
+    {
+      name: 'Main-Donau-Kanal',
+      path: 'M 20,60 Q 40,65 60,70 T 80,75',
+      type: 'waterway'
+    }
+  ];
+
+  const hotspots = [
+    { id: 'office', name: 'Dein Büro', x: 52, y: 58, type: 'office', active: true, size: 'medium' },
+    { id: 'lab', name: 'Future Labs', x: 62, y: 35, type: 'lab', active: false, size: 'large' },
+    { id: 'startup', name: 'Startup District', x: 35, y: 42, type: 'startup', active: false, size: 'large' },
+    { id: 'uni', name: 'Innovation University', x: 74, y: 62, type: 'university', active: false, size: 'medium' },
+    { id: 'event', name: 'Community Event', x: 20, y: 65, type: 'event', active: false, size: 'small' },
+    { id: 'corporate', name: 'NextGen Corp', x: 55, y: 20, type: 'corporate', active: false, size: 'medium' },
+    { id: 'institute', name: 'Research Institute', x: 82, y: 30, type: 'institute', active: false, size: 'medium' }
   ];
 
   const handleLabNavigation = (category) => {
@@ -86,72 +141,159 @@ function GameScreen() {
 
       {/* Main Map Area */}
       <div className="game-map-container">
-        <div className={`game-map ${mapLoaded ? 'loaded' : ''}`}>
-          <svg className="map-circuit-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <div className={`tech-map ${mapLoaded ? 'loaded' : ''}`}>
+          {/* Background Particles */}
+          <div className="map-particles">
+            {Array.from({ length: 50 }).map((_, i) => (
+              <div
+                key={i}
+                className="particle"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 3}s`
+                }}
+              />
+            ))}
+          </div>
+
+          {/* SVG Map Layer */}
+          <svg className="map-svg-layer" viewBox="0 0 100 100" preserveAspectRatio="none">
             <defs>
               <linearGradient id="circuitGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.6" />
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+                <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.2" />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.3" />
               </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
             </defs>
-            {/* Circuit board lines */}
-            {Array.from({ length: 15 }).map((_, i) => (
-              <line
-                key={i}
-                x1={`${Math.random() * 100}`}
-                y1={`${Math.random() * 100}`}
-                x2={`${Math.random() * 100}`}
-                y2={`${Math.random() * 100}`}
-                stroke="url(#circuitGradient)"
-                strokeWidth="0.2"
-                className="circuit-line"
+
+            {/* Circuit Board Pattern */}
+            <g className="circuit-pattern">
+              {Array.from({ length: 20 }).map((_, i) => {
+                const x1 = (i * 5) % 100;
+                const y1 = (i * 7) % 100;
+                const x2 = ((i * 5) + 15) % 100;
+                const y2 = ((i * 7) + 10) % 100;
+                return (
+                  <g key={i}>
+                    <line
+                      x1={x1}
+                      y1={y1}
+                      x2={x2}
+                      y2={y2}
+                      stroke="url(#circuitGradient)"
+                      strokeWidth="0.15"
+                      className="circuit-line"
+                    />
+                    <circle cx={x1} cy={y1} r="0.5" fill="#60A5FA" opacity="0.6" className="circuit-node" />
+                  </g>
+                );
+              })}
+            </g>
+
+            {/* Roads */}
+            {roads.map((road, idx) => (
+              <path
+                key={idx}
+                d={road.path}
+                stroke={road.type === 'highway' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(59, 130, 246, 0.4)'}
+                strokeWidth={road.type === 'highway' ? '0.3' : '0.2'}
+                fill="none"
+                strokeDasharray={road.type === 'highway' ? '2 1' : 'none'}
+                className="road-path"
               />
+            ))}
+
+            {/* City Regions as Polygons */}
+            {cityRegions.map(region => (
+              <g key={region.id}>
+                <polygon
+                  points={region.polygon}
+                  fill={`${region.color}26`}
+                  stroke={region.color}
+                  strokeWidth="0.2"
+                  className="city-region"
+                  filter="url(#glow)"
+                />
+                <text
+                  x={region.polygon.split(',')[0]}
+                  y={parseFloat(region.polygon.split(',')[1]) - 2}
+                  fill={region.color}
+                  fontSize="2.5"
+                  fontWeight="600"
+                  className="region-label"
+                >
+                  {region.name}
+                </text>
+              </g>
             ))}
           </svg>
 
-          {/* Cities */}
-          {cities.map((city, idx) => (
+          {/* Hotspots as Stacked Rectangles */}
+          {hotspots.map(hotspot => (
             <div
-              key={city.name}
-              className={`city-marker city-${idx}`}
+              key={hotspot.id}
+              className={`stacked-hotspot ${hotspot.active ? 'active' : ''} ${hotspot.size}`}
               style={{
-                left: `${city.x}%`,
-                top: `${city.y}%`
+                left: `${hotspot.x}%`,
+                top: `${hotspot.y}%`
               }}
+              onClick={() => {/* Handle hotspot click */}}
             >
-              <div className="city-buildings">
-                {Array.from({ length: city.buildings }).map((_, i) => (
-                  <div key={i} className={`building building-${i + 1}`} />
-                ))}
-              </div>
-              <div className="city-label-map">{city.name}</div>
+              <div className="hotspot-rectangle rect-1" />
+              <div className="hotspot-rectangle rect-2" />
+              <div className="hotspot-rectangle rect-3" />
+              <div className="hotspot-glow" />
+              <div className="hotspot-label">{hotspot.name}</div>
             </div>
           ))}
 
-          {/* Map Labels */}
-          <div className="map-labels">
-            <div className="map-label" style={{ top: '45%', left: '30%' }}>SÜDWEST-TANGENTE</div>
-            <div className="map-label" style={{ top: '60%', left: '50%' }}>Main-Donau-Kanal</div>
-            <div className="map-label-small" style={{ top: '35%', left: '12%' }}>Niederndorf</div>
-            <div className="map-label-airport" style={{ top: '68%', left: '58%' }}>
-              Nuremberg Airport (NUE)
-            </div>
-          </div>
+          {/* Connection Lines */}
+          <svg className="connections-layer" viewBox="0 0 100 100" preserveAspectRatio="none">
+            {hotspots.filter(h => h.active).map((source, idx) => {
+              const target = hotspots[idx + 1];
+              if (!target || !target.active) return null;
+              return (
+                <g key={`${source.id}-${target.id}`}>
+                  <line
+                    x1={source.x}
+                    y1={source.y}
+                    x2={target.x}
+                    y2={target.y}
+                    stroke={source.active && target.active ? '#F59E0B' : '#3B82F6'}
+                    strokeWidth="0.2"
+                    opacity="0.6"
+                    className="connection-line"
+                  />
+                  {/* Animated particles along line */}
+                  <circle
+                    cx={source.x}
+                    cy={source.y}
+                    r="0.3"
+                    fill="#60A5FA"
+                    className="connection-particle"
+                    style={{
+                      animation: `particle-flow ${2 + Math.random()}s linear infinite`,
+                      animationDelay: `${Math.random()}s`
+                    }}
+                  />
+                </g>
+              );
+            })}
+          </svg>
         </div>
       </div>
 
-      {/* Right Panel - Current Round */}
+      {/* Right Panel - Specialization & Actions */}
       <div className="current-round-panel">
-        <h2 className="panel-title">Current Round:</h2>
-
-        <div className="event-card">
-          <div className="event-header">
-            <div className="event-icon">⚠️</div>
-            <h3 className="event-title">{currentEvent.title}</h3>
-          </div>
-          <p className="event-description">{currentEvent.description}</p>
-        </div>
+        <h2 className="panel-title">Round {round}/{maxRounds}</h2>
 
         <div className="specialization-section">
           <h3 className="section-title">Specialization-Areas:</h3>
@@ -197,10 +339,10 @@ function GameScreen() {
         </div>
       </div>
 
-      {/* Bottom Left Button */}
-      <button className="archive-btn" onClick={() => navigate('/archive')}>
-        <Archive size={18} />
-        TO STRATEGY ARCHIVE
+      {/* Bottom Left Button - Modernized */}
+      <button className="strategy-archive-btn" onClick={() => navigate('/archive')}>
+        <Archive size={20} />
+        <span>TO STRATEGY ARCHIVE</span>
       </button>
 
       {/* Rewarded Ads Button */}

@@ -49,6 +49,14 @@ body {
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection on mobile for better UX */
+button, .stacked-hotspot, .specialization-btn {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 ::-webkit-scrollbar {

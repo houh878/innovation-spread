@@ -12,7 +12,7 @@ import {
   Users,
   ShoppingBag
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import RewardedAds from './RewardedAds';
 import Store from './Store';
 
@@ -34,10 +34,66 @@ function GameScreen() {
   } = useGame();
 
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [panelExpanded, setPanelExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mapScale, setMapScale] = useState(1);
+  const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
+  const touchRef = useRef({ startDistance: 0, startScale: 1, startX: 0, startY: 0, isPanning: false });
 
   useEffect(() => {
     setMapLoaded(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Touch gesture handlers for mobile map
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      // Pinch zoom
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      touchRef.current.startDistance = distance;
+      touchRef.current.startScale = mapScale;
+    } else if (e.touches.length === 1) {
+      // Pan
+      touchRef.current.startX = e.touches[0].clientX - mapPosition.x;
+      touchRef.current.startY = e.touches[0].clientY - mapPosition.y;
+      touchRef.current.isPanning = true;
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      // Pinch zoom
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      const scale = Math.min(3, Math.max(0.5, (touchRef.current.startScale * distance) / touchRef.current.startDistance));
+      setMapScale(scale);
+    } else if (e.touches.length === 1 && touchRef.current.isPanning) {
+      // Pan
+      setMapPosition({
+        x: e.touches[0].clientX - touchRef.current.startX,
+        y: e.touches[0].clientY - touchRef.current.startY
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchRef.current.isPanning = false;
+  };
 
   const cityRegions = [
     {
@@ -141,7 +197,16 @@ function GameScreen() {
 
       {/* Main Map Area */}
       <div className="game-map-container">
-        <div className={`tech-map ${mapLoaded ? 'loaded' : ''}`}>
+        <div 
+          className={`tech-map ${mapLoaded ? 'loaded' : ''}`}
+          onTouchStart={isMobile ? handleTouchStart : undefined}
+          onTouchMove={isMobile ? handleTouchMove : undefined}
+          onTouchEnd={isMobile ? handleTouchEnd : undefined}
+          style={isMobile ? {
+            transform: `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${mapScale})`,
+            transformOrigin: 'center center'
+          } : {}}
+        >
           {/* Background Particles */}
           <div className="map-particles">
             {Array.from({ length: 50 }).map((_, i) => (
@@ -292,7 +357,12 @@ function GameScreen() {
       </div>
 
       {/* Right Panel - Specialization & Actions */}
-      <div className="current-round-panel">
+      <div className={`current-round-panel ${panelExpanded ? 'expanded' : ''}`}>
+        {isMobile && (
+          <div className="panel-drag-handle" onClick={() => setPanelExpanded(!panelExpanded)}>
+            <div className="drag-handle-bar" />
+          </div>
+        )}
         <h2 className="panel-title">Round {round}/{maxRounds}</h2>
 
         <div className="specialization-section">

@@ -153,10 +153,10 @@ function GameScreen() {
     {
       id: 'erlangen',
       name: 'Erlangen',
-      polygon: '70,20 85,22 88,35 85,45 75,48 68,42 65,30 68,22',
+      polygon: '70,42 85,44 88,57 85,67 75,70 68,64 65,52 68,44',
       color: '#8B5CF6',
       hotspots: [
-        { id: 'erlangen_uni', name: 'FAU Erlangen', x: 75, y: 25, type: 'university', active: false }
+        { id: 'erlangen_uni', name: 'FAU Erlangen', x: 75, y: 47, type: 'university', active: false }
       ]
     },
     {
@@ -192,14 +192,165 @@ function GameScreen() {
     }
   ];
 
+  // Helper function to get hotspot color based on city
+  const getHotspotColor = (city) => {
+    const colorMap = {
+      'Nürnberg': '#3B82F6',        // Blau
+      'Erlangen': '#8B5CF6',        // Lila
+      'Fürth': '#F59E0B',          // Orange
+      'Herzogenaurach': '#10B981',  // Grün
+      'player': '#F59E0B'          // Orange für Spielerbüro
+    };
+    return colorMap[city] || '#3B82F6';
+  };
+
   const hotspots = [
-    { id: 'office', name: 'Dein Büro', x: 52, y: 58, type: 'office', active: true, size: 'medium' },
-    { id: 'lab', name: 'Future Labs', x: 62, y: 35, type: 'lab', active: false, size: 'large' },
-    { id: 'startup', name: 'Startup District', x: 35, y: 42, type: 'startup', active: false, size: 'large' },
-    { id: 'uni', name: 'Innovation University', x: 74, y: 62, type: 'university', active: false, size: 'medium' },
-    { id: 'event', name: 'Community Event', x: 20, y: 65, type: 'event', active: false, size: 'small' },
-    { id: 'corporate', name: 'NextGen Corp', x: 55, y: 20, type: 'corporate', active: false, size: 'medium' },
-    { id: 'institute', name: 'Research Institute', x: 82, y: 30, type: 'institute', active: false, size: 'medium' }
+    // === HERZOGENAURACH === (Grüne Region - links oben)
+    // Polygon: '10,15 25,18 28,30 25,40 18,42 12,35 10,25 12,18'
+    { 
+      id: 'herzogenaurach_1', 
+      name: 'Sports Innovation Campus Herzogenaurach', 
+      shortName: 'Sports Campus',
+      city: 'Herzogenaurach',
+      x: 18, 
+      y: 24, 
+      type: 'campus', 
+      active: false, 
+      size: 'large' 
+    },
+    { 
+      id: 'herzogenaurach_3', 
+      name: 'Future Mobility Tech Park', 
+      shortName: 'Mobility Park',
+      city: 'Herzogenaurach',
+      x: 20, 
+      y: 33, 
+      type: 'park', 
+      active: false, 
+      size: 'medium' 
+    },
+    
+    // === FÜRTH === (Orange/Braune Region - unten links)
+    // Polygon: '20,50 35,52 40,65 35,75 25,78 18,70 15,60 18,52'
+    { 
+      id: 'fuerth_1', 
+      name: 'Fürth Applied Innovation Park', 
+      shortName: 'Innovation Park',
+      city: 'Fürth',
+      x: 22, 
+      y: 58, 
+      type: 'park', 
+      active: false, 
+      size: 'large' 
+    },
+    { 
+      id: 'fuerth_2', 
+      name: 'Green Industry Hub Fürth', 
+      shortName: 'Green Hub',
+      city: 'Fürth',
+      x: 32, 
+      y: 61, 
+      type: 'industry', 
+      active: false, 
+      size: 'medium' 
+    },
+    { 
+      id: 'fuerth_3', 
+      name: 'Prototype Factory Fürth', 
+      shortName: 'Prototype Factory',
+      city: 'Fürth',
+      x: 38, 
+      y: 66, 
+      type: 'factory', 
+      active: false, 
+      size: 'medium' 
+    },
+    
+    // === NÜRNBERG === (Blaue Region - oben/mitte)
+    // Polygon: '60,10 75,12 80,25 78,40 70,50 60,55 50,50 45,40 48,25 55,15'
+    { 
+      id: 'nuremberg_1', 
+      name: 'Digital Campus Nuremberg', 
+      shortName: 'Digital Campus',
+      city: 'Nürnberg',
+      x: 70, 
+      y: 18, 
+      type: 'startup', 
+      active: false, 
+      size: 'large' 
+    },
+    { 
+      id: 'nuremberg_2', 
+      name: 'Future Tech Garage Nuremberg', 
+      shortName: 'Tech Garage',
+      city: 'Nürnberg',
+      x: 60, 
+      y: 22, 
+      type: 'lab', 
+      active: false, 
+      size: 'large' 
+    },
+    { 
+      id: 'nuremberg_3', 
+      name: 'City Innovation Factory', 
+      shortName: 'Innovation Factory',
+      city: 'Nürnberg',
+      x: 72, 
+      y: 30, 
+      type: 'coworking', 
+      active: false, 
+      size: 'medium' 
+    },
+    
+    // === ERLANGEN === (Lila Region - rechts unten)
+    // Polygon: '70,42 85,44 88,57 85,67 75,70 68,64 65,52 68,44'
+    { 
+      id: 'erlangen_1', 
+      name: 'Erlangen MedTech Valley Hub', 
+      shortName: 'MedTech Valley',
+      city: 'Erlangen',
+      x: 79, 
+      y: 50, 
+      type: 'research', 
+      active: false, 
+      size: 'large' 
+    },
+    { 
+      id: 'erlangen_2', 
+      name: 'Digital Health Campus Erlangen', 
+      shortName: 'Health Campus',
+      city: 'Erlangen',
+      x: 90, 
+      y: 65, 
+      type: 'campus', 
+      active: false, 
+      size: 'large' 
+    },
+    { 
+      id: 'erlangen_3', 
+      name: 'Erlangen Innovation Labs', 
+      shortName: 'Innovation Labs',
+      city: 'Erlangen',
+      x: 85, 
+      y: 56, 
+      type: 'lab', 
+      active: false, 
+      size: 'medium' 
+    },
+    
+    // === DEIN BÜRO === (Spieler-Start, zentral)
+    { 
+      id: 'office', 
+      name: 'Dein Büro', 
+      shortName: 'Dein Büro',
+      city: 'player',
+      x: 67, 
+      y: 41, 
+      type: 'office', 
+      active: true, 
+      size: 'medium',
+      isPlayerBase: true
+    }
   ];
 
   const handleLabNavigation = (category) => {
@@ -361,7 +512,7 @@ function GameScreen() {
               <div className="hotspot-rectangle rect-2" />
               <div className="hotspot-rectangle rect-3" />
               <div className="hotspot-glow" />
-              <div className="hotspot-label">{hotspot.name}</div>
+              <div className="hotspot-label">{hotspot.shortName || hotspot.name}</div>
             </div>
           ))}
 

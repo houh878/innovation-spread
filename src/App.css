@@ -607,13 +607,13 @@
   left: 50%;
   transform: translateX(-50%);
   width: var(--base-width, 20px);
-  background: #3B82F6;
+  background: var(--hotspot-color, #3B82F6);
   border-radius: 2px;
   transition: all 0.3s;
 }
 
 .stacked-hotspot.active .hotspot-rectangle {
-  background: #F59E0B;
+  background: #F59E0B !important; /* Spielerbüro bleibt orange */
 }
 
 .hotspot-rectangle.rect-1 {
@@ -656,7 +656,7 @@
 }
 
 .stacked-hotspot:not(.active) .hotspot-glow {
-  color: #3B82F6;
+  color: var(--hotspot-color, #3B82F6);
 }
 
 .stacked-hotspot:hover .hotspot-glow {

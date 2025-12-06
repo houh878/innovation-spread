@@ -3270,7 +3270,7 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 150;
-  width: 48px;
+  width: 56px;
   height: 140px;
   background: rgba(10, 22, 40, 0.95);
   backdrop-filter: blur(15px);
@@ -3285,45 +3285,71 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 16px 8px;
+  gap: 16px;
+  padding: 20px 12px;
 }
 
 .missions-trigger-tab:hover {
-  width: 56px;
+  width: 64px;
   background: rgba(59, 130, 246, 0.15);
   border-color: #3B82F6;
 }
 
-.missions-trigger-icon {
-  color: #3B82F6;
-  margin-bottom: 8px;
+.missions-trigger-tab:hover .missions-trigger-emblem {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
 }
 
-.missions-trigger-text {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #FFFFFF;
-  letter-spacing: 1px;
+.missions-trigger-tab:hover .missions-trigger-badge {
+  transform: scale(1.05);
 }
 
+/* Badge mit Anzahl */
 .missions-trigger-badge {
-  position: absolute;
-  top: 12px;
-  right: 10px;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: #F59E0B;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
   color: #FFFFFF;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Target Emblem Icon */
+.missions-trigger-emblem {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.missions-trigger-emblem-icon {
+  color: #3B82F6;
+}
+
+/* Pulse Animation für Badge */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.7);
+  }
 }
 
 /* Missions Overlay */

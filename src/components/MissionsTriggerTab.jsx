@@ -7,11 +7,15 @@ function MissionsTriggerTab({ onClick, missionsCount }) {
       onClick={onClick}
       aria-label="Missionen öffnen"
     >
-      <Target size={28} className="missions-trigger-icon" />
-      <span className="missions-trigger-text">Missionen</span>
+      {/* Badge mit Anzahl oben */}
       {missionsCount > 0 && (
         <div className="missions-trigger-badge">{missionsCount}</div>
       )}
+      
+      {/* Target Emblem Icon */}
+      <div className="missions-trigger-emblem">
+        <Target size={26} strokeWidth={2.5} className="missions-trigger-emblem-icon" />
+      </div>
     </button>
   );
 }
